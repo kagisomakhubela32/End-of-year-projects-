@@ -1,0 +1,43 @@
+<?php
+session_start();
+require_once('config.php');
+
+if(isset($_POST['submit']))
+{
+    if(isset($_POST['patientName'],$_POST['returnCondition'],$_POST['medPrescription']) && !empty($_POST['patientName']) && !empty($_POST['returnCondition']) && !empty($_POST['medPrescription']))
+    {
+        $patientName = trim($_POST['patientName']);
+        $returnCondition = trim($_POST['returnCondition']);
+        $medPrescription = trim($_POST['medPrescription']);
+       
+			
+		if($returnCondition == 'Discharged with Return'){
+			$returnDate=Date('d-m-y', strtotime('+14 days'));
+
+		}else{
+			$returnDate = 'No Return';
+		}
+		
+                $sql = "insert into tblMedicalHistory (patientName, returnCondition, medPrescription, returnDate) values(:patientName,:returnCondition,:medPrescription,:returnDate)";
+            
+                try{
+                    $handle = $pdo->prepare($sql);
+                    $params = [
+                        ':patientName'=>$patientName,
+                        ':returnCondition'=>$returnCondition,
+                        ':medPrescription'=>$medPrescription,
+                        ':returnDate'=>$returnDate
+                    ];
+                    
+                    $handle->execute($params);
+                    
+                    $success = 'User has been created successfully';
+                    
+                }
+                catch(PDOException $e){
+                    $errors[] = $e->getMessage();
+                }
+       
+	}
+}
+?>
